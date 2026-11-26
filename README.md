@@ -80,16 +80,26 @@ Each lesson adds **one database idea and at most three new C++ ideas**, and star
 | 30 | UPDATE | change rows in place; changing the id = delete + insert | — (database-only lesson) | Planned |
 | 31 | DROP TABLE | remove a table from the catalog; a free-page list so its pages get reused | — (database-only lesson) | Planned |
 
-### Part 7: Make it a real database
+### Part 7: SQLite-style storage
 | # | Lesson | Database idea | New C++ | Status |
 |---|---|---|---|---|
-| 32 | Crash safety | atomic commit, rollback journal, `fsync` | `std::filesystem`, fault-injection fakes | Planned |
-| 33 | Buffer pool | pin/unpin, LRU (Least Recently Used) eviction | `std::list`, RAII guards | Planned |
-| 34 | Release v0.1.0 | compare results with SQLite | — | Planned |
+| 32 | NULL | "no value" and three-valued logic (true / false / unknown), `IS NULL` | `std::monostate` | Planned |
+| 33 | Record format | how one row stores values of different types and lengths: serial types, varints, `INTEGER` / `REAL` / `TEXT` / `BLOB`, dynamic typing | `double`, `std::bit_cast` | Planned |
+| 34 | Slotted pages | variable-length rows in a page: cell pointer array, free space | — (database-only lesson) | Planned |
+| 35 | Overflow pages | values bigger than a page continue on a chain of pages | — (database-only lesson) | Planned |
+
+### Part 8: Make it a real database
+| # | Lesson | Database idea | New C++ | Status |
+|---|---|---|---|---|
+| 36 | Crash safety | atomic commit, rollback journal, `fsync` | `std::filesystem`, fault-injection fakes | Planned |
+| 37 | Buffer pool | pin/unpin, LRU (Least Recently Used) eviction | `std::list`, RAII guards | Planned |
+| 38 | Release v0.1.0 | compare results with SQLite | — | Planned |
 
 **SQL you can use at the end:** `CREATE TABLE` · `DROP TABLE` · `INSERT` · `SELECT … WHERE …` · `UPDATE … WHERE …` · `DELETE … WHERE …`
 
-**Stretch (optional):** B+tree merge on delete · variable-length rows · secondary indexes · WAL (Write-Ahead Log) · bytecode VM (virtual machine) · reading a real SQLite file · C++23 refresh · file locking.
+**Data types at the end:** the same five as SQLite: `NULL`, `INTEGER`, `REAL`, `TEXT`, `BLOB`.
+
+**Stretch (optional):** B+tree merge on delete · secondary indexes · WAL (Write-Ahead Log) · bytecode VM (virtual machine) · reading a real SQLite file · C++23 refresh · file locking.
 
 **Later (after v0.1.0):** `ORDER BY` (sorting) · `GROUP BY` and `COUNT` (grouping and counting) · joins (combining tables).
 
