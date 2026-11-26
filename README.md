@@ -25,7 +25,7 @@ cmake --build build
 ## Lessons
 | # | Lesson | You'll learn | Tag | Status |
 |---|--------|--------------|-----|--------|
-| 01 | [REPL and CMake](lessons/01-repl-and-cmake.md) | Compile/link model, CMake basics, reading input, `std::string` | `lesson-01-repl` | In progress |
+| 01 | [REPL and CMake](lessons/01-repl-and-cmake.md) | Compile/link model, CMake basics, reading input, `std::string` | `lesson-01-repl` | Done |
 | 02 | Commands and statements | `enum class`, `std::string_view`, splitting parsing from running a command | `lesson-02-statements` | Planned |
 | 03 | Tests and sanitizers | Multiple files and headers, GoogleTest, ASan/UBSan | `lesson-03-tests` | Planned |
 | 04 | Rows and serialization | Fixed-width integers, byte layout, `memcpy`, `static_assert` | `lesson-04-rows` | Planned |
