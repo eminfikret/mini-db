@@ -31,13 +31,13 @@ Each lesson adds **one database idea and at most three new C++ ideas**, and star
 | 01 | [REPL + CMake](lessons/01-repl-and-cmake.md) | the REPL (Read–Eval–Print Loop) is how you talk to a database | `std::string`, `std::getline`, `main`, CMake | ✅ Done |
 | 02 | [Meta-commands](lessons/02-meta-commands.md) | commands for the program vs requests about data | functions, `enum class`, `switch` | ✅ Done |
 | 03 | [Statements](lessons/03-statements.md) | parse once, execute later | `struct`, `{}` initialization, `std::optional` | ✅ Done |
-| 04 | Rows | a fixed schema; validating input | fixed-width integers, string streams, `[[nodiscard]]` | Next |
-| 05 | In-memory table | append-only table; `select` = full scan | `std::vector`, references, range-`for` | Planned |
+| 04 | [Rows](lessons/04-rows.md) | a fixed schema; validating input | fixed-width integers, string streams, `[[nodiscard]]` | Next |
+| 05 | [In-memory table](lessons/05-in-memory-table.md) | append-only table; `select` = full scan | `std::vector`, references, range-`for` | Planned |
 
 ### Part 2: Engineer the project
 | # | Lesson | Database idea | New C++ | Status |
 |---|---|---|---|---|
-| 06 | Library and modules | layers that only talk to the layer below | headers vs sources, include guards, namespaces | Planned |
+| 06 | [Library and modules](lessons/06-library-and-modules.md) | layers that only talk to the layer below | headers vs sources, include guards, namespaces | Planned |
 | 07 | Tests | golden transcripts, edge cases | GoogleTest, CTest | Planned |
 
 ### Part 3: Bytes, pages, files

@@ -12,6 +12,14 @@ Every term the lessons define, in one place. The number is the lesson where it f
 | SQL | Structured Query Language, the standard language for talking to databases | 03 |
 | parser | turns text into something the program can work with | 03 |
 | executor | acts on a parsed statement | 03 |
+| row | one record in a table | 04 |
+| column | one named field of a row | 04 |
+| schema | the list of columns, with their types and limits | 04 |
+| table | a collection of rows that share one schema | 05 |
+| append-only | new rows go at the end; nothing is removed | 05 |
+| full scan | looking at every row, one after another | 05 |
+| module | one part of the program with one job | 06 |
+| layer | a module that only talks to the module below it | 06 |
 
 ## C++
 | Term | Means | # |
@@ -36,6 +44,22 @@ Every term the lessons define, in one place. The number is the lesson where it f
 | `struct` | groups related values (members) into one type | 03 |
 | member | a value inside a struct, reached with `.` | 03 |
 | `std::optional` | holds a value or nothing (`std::nullopt`) | 03 |
+| fixed-width integer | a whole-number type with an exact size (`std::uint32_t`) | 04 |
+| signed / unsigned | can be negative / 0 and up only | 04 |
+| bit / byte | one binary digit / 8 bits | 04 |
+| string stream | `std::istringstream`: reads from text like `std::cin` reads from the keyboard | 04 |
+| attribute | a note to the compiler in `[[ ]]` | 04 |
+| `[[nodiscard]]` | "don't ignore this function's result" | 04 |
+| `std::vector` | a list that grows | 05 |
+| address | the number of a spot in memory | 05 |
+| reference | `T&`: another name for an existing variable | 05 |
+| `const` reference | `const T&`: read-only access to the caller's variable, no copy | 05 |
+| range-based `for` | runs once for every element of a list | 05 |
+| declaration | "this exists": a name and type, no body | 06 |
+| definition | the actual body | 06 |
+| header / source | `.hpp` with declarations and types / `.cpp` with definitions | 06 |
+| include guard | `#ifndef`/`#define`/`#endif` that makes a header count only once | 06 |
+| library | compiled code that programs can use | 06 |
 
 ## Tools
 | Term | Means | # |
@@ -45,3 +69,4 @@ Every term the lessons define, in one place. The number is the lesson where it f
 | target | something CMake builds (a program or library) | 01 |
 | flag | an option for a tool (`-Wall`, `-Werror`) | 01 |
 | pipe | `\|` sends one program's output into another program's input | 01 |
+| `PUBLIC` / `PRIVATE` | (CMake) for this target and its users / for this target only | 06 |
