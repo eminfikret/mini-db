@@ -29,7 +29,7 @@ REPL           read what you type, handle .meta-commands   ← 01–02 ✅
 Parser         text → statement + checked row               ← 03–04 ✅
 Executor       insert into / scan the table                 ← you are here
 Table          rows in memory                               ← you are here
-B-tree         find rows fast                               ← 17+
+B-tree         find rows fast                               ← 16+
 Pager          read/write the file                          ← 11–14
 ```
 

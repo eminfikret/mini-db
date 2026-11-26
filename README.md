@@ -22,10 +22,15 @@ cmake --build build
 ./build/mini-db
 ```
 
+## Goal
+Build, in C++20, a single-file database that stores rows in an on-disk B+tree and answers `INSERT` and `SELECT … WHERE` through a hand-written parser, to learn modern C++ (classes, ownership and RAII, project structure, testing) and how a database stores and finds data.
+
 ## Lessons
 Each lesson adds **one database idea and at most three new C++ ideas**, and starts by showing the problem the new idea solves. Finished lessons are tagged `lesson-NN-<name>` (e.g. `lesson-01-repl`). Terms are collected in the [glossary](lessons/glossary.md).
 
-### Part 1: Talk to the database
+The 26 lessons ship as **5 releases**. Each release is tagged (`v0.1` … `v1.0`) and is a natural place to stop.
+
+### v0.1: a tested in-memory database
 | # | Lesson | Database idea | New C++ | Status |
 |---|---|---|---|---|
 | 01 | [REPL + CMake](lessons/01-repl-and-cmake.md) | the REPL (Read–Eval–Print Loop) is how you talk to a database | `std::string`, `std::getline`, `main`, CMake | ✅ Done |
@@ -33,14 +38,10 @@ Each lesson adds **one database idea and at most three new C++ ideas**, and star
 | 03 | [Statements](lessons/03-statements.md) | parse once, execute later | `struct`, `{}` initialization, `std::optional` | ✅ Done |
 | 04 | [Rows](lessons/04-rows.md) | a fixed schema; validating input | fixed-width integers, string streams, `[[nodiscard]]` | Next |
 | 05 | [In-memory table](lessons/05-in-memory-table.md) | append-only table; `select` = full scan | `std::vector`, references, range-`for` | Planned |
-
-### Part 2: Engineer the project
-| # | Lesson | Database idea | New C++ | Status |
-|---|---|---|---|---|
 | 06 | [Library and modules](lessons/06-library-and-modules.md) | layers that only talk to the layer below | headers vs sources, include guards, namespaces | Planned |
 | 07 | Tests | golden transcripts, edge cases | GoogleTest, CTest | Planned |
 
-### Part 3: Bytes, pages, files
+### v0.2: data survives a restart
 | # | Lesson | Database idea | New C++ | Status |
 |---|---|---|---|---|
 | 08 | Row serialization | on-disk row format | `std::byte`, `std::span`, `std::memcpy`, sanitizers | Planned |
@@ -51,61 +52,48 @@ Each lesson adds **one database idea and at most three new C++ ideas**, and star
 | 13 | One owner per file | a resource has exactly one owner | move-only types, `std::move`, rule of five | Planned |
 | 14 | Pager | page cache, cache miss, dirty page | `std::unique_ptr`, rule of zero | Planned |
 | 15 | Cursor | a position in a table | pointers, `nullptr`, `std::size_t` | Planned |
-| 16 | Tooling and CI | — | clang-format, clang-tidy, CMake presets, GitHub Actions | Planned |
 
-### Part 4: The B+tree
+### v0.3: a B+tree with two levels
 | # | Lesson | Database idea | New C++ | Status |
 |---|---|---|---|---|
-| 17 | Leaf node | B-tree vs B+tree, node = page | bit shifts and masks, a view class over bytes | Planned |
-| 18 | Sorted keys | binary search, duplicate keys | `std::memmove`, lambdas | Planned |
-| 19 | Leaf split | split, new root, internal node format | `assert`, recursion | Planned |
-| 20 | Search | descend from the root | `std::map`, `<random>` | Planned |
-| 21 | Scan across leaves | next-leaf pointer, range scan | operator overloading, `begin()`/`end()` | Planned |
-| 22 | Parent update | separator keys | — (database-only lesson) | Planned |
-| 23 | Internal split | the tree grows taller | — (database-only lesson) | Planned |
+| 16 | Leaf node | B-tree vs B+tree, node = page | bit shifts and masks, a view class over bytes | Planned |
+| 17 | Sorted keys | binary search, duplicate keys | `std::memmove`, lambdas | Planned |
+| 18 | Leaf split | split, new root, internal node format | `assert`, recursion | Planned |
+| 19 | Search | descend from the root | `std::map`, `<random>` | Planned |
+| 20 | Scan across leaves | next-leaf pointer, range scan | operator overloading, `begin()`/`end()` | Planned |
 
-### Part 5: Real SQL
+### v0.4: a tree of any height
 | # | Lesson | Database idea | New C++ | Status |
 |---|---|---|---|---|
-| 24 | Tokenizer | lexical analysis | `std::string_view`, lifetimes, dangling | Planned |
-| 25 | Parser | grammar, recursive descent, AST (Abstract Syntax Tree) | `std::variant`, `std::visit`, custom exceptions | Planned |
-| 26 | WHERE | predicates, operator precedence | recursive types with `std::unique_ptr` | Planned |
-| 27 | Executor | iterator ("Volcano") model, point lookup | abstract classes, `virtual`, `override` | Planned |
-| 28 | CREATE TABLE | the catalog: the schema stored in the file | `std::unordered_map` | Planned |
+| 21 | Parent update | separator keys | — (database-only lesson) | Planned |
+| 22 | Internal split | the tree grows taller | — (database-only lesson) | Planned |
 
-### Part 6: All basic SQL operations
+### v1.0: it speaks SQL
 | # | Lesson | Database idea | New C++ | Status |
 |---|---|---|---|---|
-| 29 | DELETE | delete rows that match `WHERE` (lazy: no tree rebalancing) | — (database-only lesson) | Planned |
-| 30 | UPDATE | change rows in place; changing the id = delete + insert | — (database-only lesson) | Planned |
-| 31 | DROP TABLE | remove a table from the catalog; a free-page list so its pages get reused | — (database-only lesson) | Planned |
+| 23 | Tokenizer | lexical analysis | `std::string_view`, lifetimes, dangling | Planned |
+| 24 | Parser | grammar, recursive descent, AST (Abstract Syntax Tree) | `std::variant`, `std::visit`, custom exceptions | Planned |
+| 25 | WHERE | predicates, operator precedence | recursive types with `std::unique_ptr` | Planned |
+| 26 | Executor | iterator ("Volcano") model, point lookup by id | abstract classes, `virtual`, `override` | Planned |
 
-### Part 7: SQLite-style storage
-| # | Lesson | Database idea | New C++ | Status |
-|---|---|---|---|---|
-| 32 | NULL | "no value" and three-valued logic (true / false / unknown), `IS NULL` | `std::monostate` | Planned |
-| 33 | Record format | how one row stores values of different types and lengths: serial types, varints, `INTEGER` / `REAL` / `TEXT` / `BLOB`, dynamic typing | `double`, `std::bit_cast` | Planned |
-| 34 | Slotted pages | variable-length rows in a page: cell pointer array, free space | — (database-only lesson) | Planned |
-| 35 | Overflow pages | values bigger than a page continue on a chain of pages | — (database-only lesson) | Planned |
+**At v1.0 you can use:** `INSERT INTO users VALUES (…)` and `SELECT … FROM users WHERE …`, on one table (`id`, `username`, `email`) stored in a B+tree on disk.
 
-### Part 8: Make it a real database
-| # | Lesson | Database idea | New C++ | Status |
-|---|---|---|---|---|
-| 36 | Crash safety | atomic commit, rollback journal, `fsync` | `std::filesystem`, fault-injection fakes | Planned |
-| 37 | Buffer pool | pin/unpin, LRU (Least Recently Used) eviction | `std::list`, RAII guards | Planned |
-| 38 | Release v0.1.0 | compare results with SQLite | — | Planned |
+**Each release ends with:** all tests green, a short release note, and the release tag. At v1.0, the same queries are also compared against the real `sqlite3`.
 
-**SQL you can use at the end:** `CREATE TABLE` · `DROP TABLE` · `INSERT` · `SELECT … WHERE …` · `UPDATE … WHERE …` · `DELETE … WHERE …`
+## Maybe later (after v1.0)
+Each one would be its own small v1.x release, in this order:
+1. `CREATE TABLE` + catalog (several tables)
+2. `DELETE` + `UPDATE`
+3. Crash safety (rollback journal)
+4. Record format + `NULL` (more data types)
+5. Slotted pages (variable-length rows)
+6. `DROP TABLE` + free-page list
+7. Secondary index
+8. Writing a function template
+9. C++23 refresh (`std::expected`)
+10. CI with clang-format and clang-tidy
 
-**Data types at the end:** the same five as SQLite: `NULL`, `INTEGER`, `REAL`, `TEXT`, `BLOB`.
-
-**Stretch (optional):** B+tree merge on delete · secondary indexes · WAL (Write-Ahead Log) · bytecode VM (virtual machine) · reading a real SQLite file · C++23 refresh · file locking.
-
-**Later (after v0.1.0):** `ORDER BY` (sorting) · `GROUP BY` and `COUNT` (grouping and counting) · joins (combining tables).
-
-**Not in this project:** a query optimizer · network access · many users at once · logins and permissions. Those belong to other projects (e.g. a future server database).
-
-The plan may change as the project grows.
+**Not in this project:** a query optimizer · network access · many users at once · logins · joins · `ORDER BY` / `GROUP BY` · buffer pool · overflow pages · WAL (Write-Ahead Log) · a bytecode VM.
 
 ## Credits
 - Storage-layer order inspired by cstack's [Let's Build a Simple Database](https://cstack.github.io/db_tutorial/) (in C; this repo is a separate C++ implementation).

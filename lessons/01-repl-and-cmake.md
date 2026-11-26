@@ -14,7 +14,7 @@ A database is a stack of layers. Each lesson builds one:
 ```
 REPL           read what you type          ← you are here
 Parser         text → command              ← 03
-B-tree         find rows fast              ← 17+
+B-tree         find rows fast              ← 16+
 Pager          read/write the file         ← 11–14
 file on disk   mini.db
 ```

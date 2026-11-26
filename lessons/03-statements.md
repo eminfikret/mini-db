@@ -27,7 +27,7 @@ Statements are a tiny version of **SQL** (*Structured Query Language*), the stan
 REPL           read what you type, handle .meta-commands   ← 01–02 ✅
 Parser         text → statement                             ← you are here
 Executor       run the statement                            ← you are here (placeholder messages)
-B-tree         find rows fast                               ← 17+
+B-tree         find rows fast                               ← 16+
 Pager          read/write the file                          ← 11–14
 file on disk   mini.db
 ```

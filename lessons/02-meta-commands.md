@@ -15,7 +15,7 @@ A **meta-command** is an instruction for the program itself, not for the data. T
 ```
 REPL           read what you type, handle .meta-commands   ← you are here
 Parser         text → statement                             ← 03
-B-tree         find rows fast                               ← 17+
+B-tree         find rows fast                               ← 16+
 Pager          read/write the file                          ← 11–14
 file on disk   mini.db
 ```
