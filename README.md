@@ -91,7 +91,9 @@ Each lesson adds **one database idea and at most three new C++ ideas**, and star
 
 **Stretch (optional):** B+tree merge on delete · variable-length rows · secondary indexes · WAL (Write-Ahead Log) · bytecode VM (virtual machine) · reading a real SQLite file · C++23 refresh · file locking.
 
-**Later, as a separate track:** joins (combining tables).
+**Later (after v0.1.0):** `ORDER BY` (sorting) · `GROUP BY` and `COUNT` (grouping and counting) · joins (combining tables).
+
+**Not in this project:** a query optimizer · network access · many users at once · logins and permissions. Those belong to other projects (e.g. a future server database).
 
 The plan may change as the project grows.
 
