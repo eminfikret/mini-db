@@ -71,17 +71,27 @@ Each lesson adds **one database idea and at most three new C++ ideas**, and star
 | 25 | Parser | grammar, recursive descent, AST (Abstract Syntax Tree) | `std::variant`, `std::visit`, custom exceptions | Planned |
 | 26 | WHERE | predicates, operator precedence | recursive types with `std::unique_ptr` | Planned |
 | 27 | Executor | iterator ("Volcano") model, point lookup | abstract classes, `virtual`, `override` | Planned |
-| 28 | CREATE TABLE *(should)* | the catalog: schema stored in the file | `std::unordered_map` | Planned |
+| 28 | CREATE TABLE | the catalog: the schema stored in the file | `std::unordered_map` | Planned |
 
-### Part 6: Make it a real database
+### Part 6: All basic SQL operations
 | # | Lesson | Database idea | New C++ | Status |
 |---|---|---|---|---|
-| 29 | DELETE *(should)* | lazy delete | — | Planned |
-| 30 | Crash safety *(should)* | atomic commit, rollback journal, `fsync` | `std::filesystem`, fault-injection fakes | Planned |
-| 31 | Buffer pool *(should)* | pin/unpin, LRU (Least Recently Used) eviction | `std::list`, RAII guards | Planned |
-| 32 | Release v0.1.0 | compare results with SQLite | — | Planned |
+| 29 | DELETE | delete rows that match `WHERE` (lazy: no tree rebalancing) | — (database-only lesson) | Planned |
+| 30 | UPDATE | change rows in place; changing the id = delete + insert | — (database-only lesson) | Planned |
+| 31 | DROP TABLE | remove a table from the catalog; a free-page list so its pages get reused | — (database-only lesson) | Planned |
 
-**Stretch (optional):** B+tree merge on delete · free-page list · variable-length rows · secondary indexes · WAL (Write-Ahead Log) · bytecode VM (virtual machine) · reading a real SQLite file · C++23 refresh · file locking.
+### Part 7: Make it a real database
+| # | Lesson | Database idea | New C++ | Status |
+|---|---|---|---|---|
+| 32 | Crash safety | atomic commit, rollback journal, `fsync` | `std::filesystem`, fault-injection fakes | Planned |
+| 33 | Buffer pool | pin/unpin, LRU (Least Recently Used) eviction | `std::list`, RAII guards | Planned |
+| 34 | Release v0.1.0 | compare results with SQLite | — | Planned |
+
+**SQL you can use at the end:** `CREATE TABLE` · `DROP TABLE` · `INSERT` · `SELECT … WHERE …` · `UPDATE … WHERE …` · `DELETE … WHERE …`
+
+**Stretch (optional):** B+tree merge on delete · variable-length rows · secondary indexes · WAL (Write-Ahead Log) · bytecode VM (virtual machine) · reading a real SQLite file · C++23 refresh · file locking.
+
+**Later, as a separate track:** joins (combining tables).
 
 The plan may change as the project grows.
 
