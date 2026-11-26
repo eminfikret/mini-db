@@ -25,11 +25,12 @@ file on disk   mini.db
 main loop
   │ line starts with '.'
   ▼
-do_meta_command(line) ──returns──► MetaCommandResult
-                                        │
-main: switch on the result ◄────────────┘
-  Exit          → end the program
-  Unrecognized  → print "Unrecognized command '…'."
+meta-command function ── decides what the line means, prints nothing
+  │ gives its decision back
+  ▼
+main ── acts on the decision
+  "exit"          → end the program
+  "unrecognized"  → print "Unrecognized command '…'."
 ```
 
 ---
@@ -57,10 +58,11 @@ int sum = add(2, 3);       // call it: sum is 5
 - **One job per function.** *Why:* small pieces are easier to read, test and change.
 
 ### Do
-```cpp
-void do_meta_command(std::string line)
-```
-Move "print `Unrecognized command '…'.`" into this function. Keep the `.exit` check in `main` for now. In `main`, call the function for every line that `line.starts_with('.')`.
+Write a function that handles a line starting with `.`. For now it prints `Unrecognized command '…'.` and gives nothing back. Keep the `.exit` check in `main` for now. `main` calls the function for every line that starts with `.`.
+
+<details><summary>Hint 1</summary>What does the function need as input to print the message? That's its parameter.</details>
+<details><summary>Hint 2</summary>It gives nothing back, so its return type is the "nothing" type from the table above.</details>
+<details><summary>Hint 3</summary>`std::string` has a member function (C++20) that checks how a text begins. Look it up on cppreference.</details>
 
 ✅ Behaves exactly like lesson 01
 
@@ -68,7 +70,7 @@ Move "print `Unrecognized command '…'.`" into this function. Keep the `.exit` 
 
 ## Step 2: Results as `enum class`
 
-**Try this first:** move the `.exit` check into `do_meta_command`.
+**Try this first:** move the `.exit` check into your function.
 - `return 0;` there won't compile: a `void` function returns nothing.
 - `return;` compiles, but only ends the **function**. The loop keeps going and `.exit` stops working.
 
@@ -86,17 +88,16 @@ if (c == Color::Red) { ... }
 |---|---|
 | values need the prefix: `Color::Red` | no clash with other things named `Red` |
 | it doesn't silently turn into a number | `Color::Red + 1` is an error, so mistakes get caught |
-| `MetaCommandResult::Exit` instead of `1` | the name says what it means |
+| a named value instead of `1` | the name says what it means |
 
 **Don't end the program inside a helper function.** Return a result and let `main` decide. *Why:* in lesson 12, the database must be saved to disk on the way out, and that only works if every exit goes through `main`.
 
 ### Do
-```cpp
-enum class MetaCommandResult { Exit, Unrecognized };
+Create an `enum class` for the possible outcomes of a meta-command. The function now **decides** and gives back one outcome. It prints nothing and never ends the program. `main` reacts to the outcome (for now with `if`).
 
-MetaCommandResult do_meta_command(std::string line)
-```
-The function only **decides** and returns a result. It prints nothing. `main` reacts to the result (for now with `if`).
+<details><summary>Hint 1</summary>How many different outcomes are there right now? Look at the transcript at the top.</details>
+<details><summary>Hint 2</summary>The function's return type changes from "nothing" to your new type.</details>
+<details><summary>Hint 3</summary>In `main`, keep the outcome in a variable before you check it.</details>
 
 ✅ `.exit` quits again · `.foo` → `Unrecognized command '.foo'.` · the function contains no `std::cout`
 
@@ -121,7 +122,10 @@ switch (c) {
 - **No `default:` when switching on an enum.** *Why:* then `-Wall` (the warnings flag from lesson 01) warns when a value has no `case`, and `-Werror` turns that into a build error. The compiler checks that you handled every value.
 
 ### Do
-Replace the `if` in `main` with a `switch` on the result.
+Replace the `if` in `main` with a `switch` on the outcome.
+
+<details><summary>Hint 1</summary>One `case` ends the program. Which statement ends `main`?</details>
+<details><summary>Hint 2</summary>Inside a `switch`, `return` ends the whole function, not just the `switch`. Nothing after it runs.</details>
 
 ✅ Add `Help` to the enum → the build **fails** and names the missing case. Remove `Help` → it builds.
 
@@ -131,17 +135,17 @@ Replace the `if` in `main` with a `switch` on the result.
 - [ ] clean build, zero warnings
 - [ ] `.foo` → `Unrecognized command '.foo'.`
 - [ ] `.exit` and end of input (Ctrl-D) both quit with exit code `0`
-- [ ] `do_meta_command` prints nothing and never ends the program
-- [ ] `main` reacts to the result with a `switch` that has no `default:`
+- [ ] the meta-command function prints nothing and never ends the program
+- [ ] `main` reacts to the outcome with a `switch` that has no `default:`
 
 ## Check yourself
 Answer before opening.
 
-<details><summary>1. Why does <code>do_meta_command</code> return <code>Exit</code> instead of ending the program itself?</summary>
+<details><summary>1. Why does the meta-command function give back an "exit" outcome instead of ending the program itself?</summary>
 So every exit goes through `main`. Later, `main` must save the database to disk before quitting.
 </details>
 
-<details><summary>2. You add <code>Help</code> to <code>MetaCommandResult</code> but forget it in the <code>switch</code>. What happens, and why is that good?</summary>
+<details><summary>2. You add a new value to your enum but forget it in the <code>switch</code>. What happens, and why is that good?</summary>
 The build fails: `-Wall` warns about the unhandled value and `-Werror` makes it an error. The mistake is caught before the program ever runs. That's why there's no `default:`.
 </details>
 

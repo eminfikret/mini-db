@@ -45,15 +45,15 @@ main.cpp → compile → main.o → link → mini-db
 
 **CMake** (from *cross-platform make*) reads `CMakeLists.txt` and generates build files. **Ninja** is a fast build tool that reads those files and calls the compiler. *Why not call the compiler yourself:* it gets messy once there are many files, tests and libraries.
 
-**`CMakeLists.txt`, top to bottom (order matters):**
-| # | Line | Means |
+**`CMakeLists.txt`, top to bottom (order matters).** Each line is a command, written `command(arguments)`. Look up each command's arguments in the CMake reference (links at the bottom).
+| # | Command | What it's for |
 |---|---|---|
-| 1 | `cmake_minimum_required(VERSION 3.20)` | oldest CMake allowed. Always first |
-| 2 | `project(mini-db LANGUAGES CXX)` | project name. `CXX` = CMake's name for C++ |
-| 3 | `set(CMAKE_CXX_STANDARD 20)` · `set(CMAKE_CXX_STANDARD_REQUIRED ON)` | use C++20 (the 2020 version of C++), fail if not available |
-| 4 | `set(CMAKE_CXX_EXTENSIONS OFF)` | standard C++ only, no compiler-specific extras. *Why:* compiles the same everywhere |
-| 5 | `add_executable(mini-db src/main.cpp)` | a **target** = something CMake builds: the program's name + its source files |
-| 6 | `target_compile_options(mini-db PRIVATE -Wall -Wextra -Wpedantic -Werror)` | compiler flags for that target (`PRIVATE` = only this target) |
+| 1 | `cmake_minimum_required` | the oldest CMake version allowed (use 3.20). Always first |
+| 2 | `project` | the project's name and its language. CMake calls C++ `CXX` |
+| 3 | `set` with `CMAKE_CXX_STANDARD` and `CMAKE_CXX_STANDARD_REQUIRED` | use C++20 (the 2020 version of C++), and fail if it isn't available |
+| 4 | `set` with `CMAKE_CXX_EXTENSIONS` | turn compiler-specific extras off. *Why:* the code compiles the same everywhere |
+| 5 | `add_executable` | creates a **target** (something CMake builds): the program's name + its source files |
+| 6 | `target_compile_options` | compiler flags for one target. `PRIVATE` = only for this target |
 
 *Why this order:* settings (3–4) apply to targets created after them, and line 6 can only name a target that already exists (line 5).
 
@@ -72,16 +72,21 @@ main.cpp → compile → main.o → link → mini-db
 | `./build/mini-db` | run the program |
 | `rm -rf build` | something weird → delete the build folder, configure again |
 
-**Exit code:** every program ends with a number. `0` = success, anything else = failure. `return 0;` at the end of `main` sets it. `echo $?` in the terminal shows the last program's exit code.
+**Every program starts in `main`:**
+| Write | Means |
+|---|---|
+| `int main() { ... }` | the **function** where every program starts. `int` = it returns a whole number, the **exit code** |
+| `return 0;` | end `main` and report success. `;` ends every statement |
+
+**Exit code:** `0` = success, anything else = failure. `echo $?` in the terminal shows the last program's exit code.
 
 ### Do
-1. Write `CMakeLists.txt` from the table.
-2. Write `src/main.cpp` with only an empty `main` that returns `0`:
-   | Write | Means |
-   |---|---|
-   | `int main() { ... }` | the **function** where every program starts. `int` = it returns a whole number (the exit code) |
-   | `return 0;` | end `main`, report success. `;` ends every statement |
+1. Write `CMakeLists.txt`: a C++20 program called `mini-db`, built from `src/main.cpp`, with all four warning flags.
+2. Write `src/main.cpp`: a program that does nothing and reports success.
 3. Configure, build, run, then `echo $?`.
+
+<details><summary>Hint 1</summary>Write the six commands in the table's order. Each one's reference page lists its arguments.</details>
+<details><summary>Hint 2</summary>The program's name appears twice: once where the target is created and once where its flags are set.</details>
 
 ✅ Builds with no warnings · prints nothing · `echo $?` → `0`
 
@@ -94,8 +99,8 @@ main.cpp → compile → main.o → link → mini-db
 | Write | Means |
 |---|---|
 | `#include <iostream>` | use the standard library's input/output part. Goes at the top of the file |
-| `std::cout << "db > ";` | print text. `cout` = *character output* (the screen) |
-| `"db > "` | text goes in **double quotes** |
+| `std::cout << "Hello";` | print text. `cout` = *character output* (the screen) |
+| `"Hello"` | text goes in **double quotes** |
 | `'\n'` | newline character (single quotes = exactly one character) |
 | `// note` | comment, ignored by the compiler |
 
@@ -111,6 +116,8 @@ main.cpp → compile → main.o → link → mini-db
 ### Do
 Print `db > ` once. Rebuild, run.
 
+<details><summary>Hint</summary>The prompt has no newline after it, so the cursor waits right behind it.</details>
+
 ✅ Shows `db > ` (no newline after it, so the terminal adds a `%`, see Q&A)
 
 ---
@@ -121,20 +128,23 @@ Print `db > ` once. Rebuild, run.
 | Write | Means |
 |---|---|
 | `#include <string>` | use text variables and `getline` |
-| `std::string line;` | create a **variable** named `line` of **type** `std::string` (text). Type first, then name |
+| `std::string name;` | create a **variable** named `name` of **type** `std::string` (text). Type first, then name |
 | `while (condition) { ... }` | repeat the block (`{ }`) as long as the condition is true |
-| `std::getline(std::cin, line)` | wait for one line of typing, store it in `line`. `cin` = *character input* (the keyboard) |
+| `std::getline(std::cin, name)` | wait for one line of typing and store it in `name`. `cin` = *character input* (the keyboard) |
 
 `std::getline`:
 - stores the line **without** the Enter key's `\n`
-- is `true` if it got a line, `false` at **EOF** (*End Of File*: no more input)
+- gives `true` if it got a line, `false` at **EOF** (*End Of File*: no more input)
 - you cause EOF by pressing **Ctrl-D** (or when piped input runs out)
-- → use it **as the loop condition**. *Why:* otherwise, after EOF it fails instantly forever and the loop never stops.
+- after EOF, every later call fails instantly
 
-The prompt must print **before** each read, or the program waits silently and the prompt shows up late. A prompt without `'\n'` still appears because `cin` **flushes** `cout` before reading (flush = push waiting output to the screen now).
+A prompt without `'\n'` still appears on screen because `cin` **flushes** `cout` before reading (flush = push waiting output to the screen now).
 
 ### Do
-Loop: print the prompt → read a line. Stop at EOF.
+Keep asking for lines until the input ends. The prompt must show before **every** line the user types.
+
+<details><summary>Hint 1</summary>`std::getline` gives `true` or `false`. Where in a `while` does a `true`/`false` go?</details>
+<details><summary>Hint 2</summary>The prompt must appear before the first read and again after each line has been handled.</details>
 
 ✅ Prompt appears before every line you type · Ctrl-D ends the program
 
@@ -146,14 +156,16 @@ Loop: print the prompt → read a line. Stop at EOF.
 | Write | Means |
 |---|---|
 | `if (condition) { ... } else { ... }` | run the first block if true, otherwise the second |
-| `line == ".exit"` | does `line` contain the text `.exit`? (`==` compares; a single `=` **assigns**) |
+| `name == "alice"` | does `name` contain exactly the text `alice`? (`==` compares; a single `=` **assigns**) |
 | `return 0;` inside the loop | ends `main` immediately, so the program exits |
 
 ⚠️ `==` compares text only when one side is a `std::string` (like `line`). `"abc" == "abc"`, two raw text **literals** (text written directly in code), compares memory addresses, not text.
 
 ### Do
 - `.exit` → end the program with success
-- anything else → print `Unrecognized command '<what was typed>'.` then a newline
+- anything else → print `Unrecognized command '<what was typed>'.` then a newline, and keep going
+
+<details><summary>Hint</summary>Single quotes inside double-quoted text are just normal characters.</details>
 
 ✅ All of "Done when" below
 

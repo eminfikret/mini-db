@@ -37,23 +37,22 @@ The **parser** turns text into something the program can work with. The **execut
 ```
 main loop
   │
-  ├─ starts with '.' ──► do_meta_command(line)       (lesson 02)
+  ├─ starts with '.' ──► meta-command function          (lesson 02)
   │
-  └─ otherwise ───────► prepare_statement(line) ──► std::optional<Statement>
-                                                      │
-                            empty ◄───────────────────┤
-                              → "Unrecognized keyword at start of '…'."
-                                                      │
-                            has a Statement ◄─────────┘
-                              → execute_statement(statement)   prints the placeholder
-                              → main prints "Executed."
+  └─ otherwise ───────► PREPARE: text → a statement, or "not recognized"
+                            │
+                            ├─ not recognized → "Unrecognized keyword at start of '…'."
+                            │
+                            └─ a statement ──► EXECUTE: prints the placeholder message
+                                                 → main prints "Executed."
 ```
+**Prepare** reads the text. **Execute** never sees text, only the statement.
 
 ---
 
 ## Step 1: Give a statement a shape
 
-**Try this first:** picture the executor checking `line.starts_with("insert")` itself. In lesson 04, `insert` gets three values (`1 alice alice@example.com`). Then every part of the program that touches the statement would have to cut up the text again.
+**Try this first:** picture the executor checking the text for `insert` itself. In lesson 04, `insert` gets three values (`1 alice alice@example.com`). Then every part of the program that touches the statement would have to cut up the text again.
 
 ### Know
 A **`struct`** groups related values into one new type. Each value inside is a **member**.
@@ -69,14 +68,13 @@ p.x = 10;          // . reaches a member
 **`{}` initialization:** `Point p{3, 4};` fills the members in order. *Why always initialize:* a member you don't set holds random leftover memory, not `0`.
 
 ### Do
-```cpp
-enum class StatementType { Insert, Select };
+Create a type that represents a statement. For now it only needs to say **which kind** of statement it is: insert or select. Nothing else is a valid kind.
 
-struct Statement {
-    StatementType type;
-};
-```
-There's no `Delete`, because `delete` must be rejected. In lesson 04, `Statement` gets more members (the row to insert).
+In lesson 04, a statement gets more members (the row to insert), so make it a type that can grow.
+
+<details><summary>Hint 1</summary>"Which kind, from a fixed list" is what lesson 02 used an `enum class` for.</details>
+<details><summary>Hint 2</summary>The statement itself is a `struct` with one member: its kind.</details>
+<details><summary>Hint 3</summary>Should `delete` be one of the kinds? Check what the transcript expects for `delete 1`.</details>
 
 ✅ Builds (nothing uses the types yet)
 
@@ -84,7 +82,7 @@ There's no `Delete`, because `delete` must be rejected. In lesson 04, `Statement
 
 ## Step 2: Prepare a statement, or report "not recognized"
 
-**Try this first:** how would `prepare_statement` say "I don't recognize this"? It has to return a `Statement`, but `delete 1` isn't an insert or a select. Any type you pick is a lie.
+**Try this first:** how would the prepare function say "I don't recognize this"? If it always gives back a statement, what kind would `delete 1` be? Any kind you pick is a lie.
 
 ### Know
 **`std::optional<T>`** (`#include <optional>`): either holds a `T` **or nothing**.
@@ -109,14 +107,16 @@ if (age.has_value()) {
 | `.value()` | the thing inside. ⚠️ Calling it on an empty optional is an error that stops the program, so check `has_value()` first |
 
 ### Do
-```cpp
-std::optional<Statement> prepare_statement(std::string line)
-```
-- `insert …` (anything that starts with `insert`) → a `Statement` with type `Insert`
-- exactly `select` → type `Select`
-- anything else → nothing
+Write the **prepare** function. It gets the line and gives back either a statement or "not recognized":
+- starts with `insert` (values come after it) → an insert statement
+- exactly `select` → a select statement
+- anything else → not recognized
 
-In `main`: if it's empty, print `Unrecognized keyword at start of '<line>'.`
+In `main`: when it's not recognized, print `Unrecognized keyword at start of '<line>'.`
+
+<details><summary>Hint 1</summary>"A statement, or nothing" is exactly what the `Know` box above is about.</details>
+<details><summary>Hint 2</summary>Two different checks: one where more text may follow, one that must match exactly. You used both in lesson 02.</details>
+<details><summary>Hint 3</summary>Create the statement with `{}` initialization, the same way the `Point` example does.</details>
 
 ✅ `delete 1` → `Unrecognized keyword at start of 'delete 1'.`
 
@@ -127,10 +127,10 @@ In `main`: if it's empty, print `Unrecognized keyword at start of '<line>'.`
 Nothing new here: this uses `switch` from lesson 02.
 
 ### Do
-```cpp
-void execute_statement(Statement statement)
-```
-Use a `switch` on `statement.type` (no `default:`) to print the placeholder message. Back in `main`, print `Executed.` after it.
+Write the **execute** function. It gets a statement (never text), prints the placeholder message for its kind, and gives nothing back. Back in `main`, print `Executed.` after it.
+
+<details><summary>Hint 1</summary>Pick the message by the statement's kind. Which tool from lesson 02 does that and catches a forgotten kind?</details>
+<details><summary>Hint 2</summary>`main` only calls execute when prepare **did** recognize the line. Get the statement out before you pass it on.</details>
 
 ✅ All of "Done when" below
 
@@ -148,7 +148,7 @@ Use a `switch` on `statement.type` (no `default:`) to print the placeholder mess
 ## Check yourself
 Answer before opening.
 
-<details><summary>1. Why does <code>StatementType</code> have no <code>Delete</code>?</summary>
+<details><summary>1. Why is <code>delete</code> not one of the statement kinds?</summary>
 Because `delete` must be rejected. If the type existed, the program could pretend to understand a statement it can't run.
 </details>
 
@@ -156,7 +156,7 @@ Because `delete` must be rejected. If the type existed, the program could preten
 It's an error that stops the program. Check `.has_value()` first.
 </details>
 
-<details><summary>3. (From lesson 02) You add <code>Update</code> to <code>StatementType</code>. What tells you that <code>execute_statement</code> must change too?</summary>
+<details><summary>3. (From lesson 02) You add an <code>update</code> kind. What tells you that the execute function must change too?</summary>
 The build fails: the `switch` has no `case` for `Update`, and since there's no `default:`, `-Wall` + `-Werror` stop the build.
 </details>
 
@@ -168,7 +168,8 @@ _Added as they come up._
 ## Q&A
 Questions asked while building this lesson.
 
-_Added as they come up._
+**How should I name a variable that holds a `std::optional`?**
+There's no official rule. Common styles: name it after what's inside (`statement`), or add a prefix that shows it might be empty: `maybe_statement` or `opt_statement`. A prefix makes `maybe_statement.value()` read naturally ("take the statement out of the maybe"). Pick one style and use it everywhere.
 
 ## Compare with the reference code
 ```sh
