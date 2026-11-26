@@ -61,6 +61,16 @@ Every term the lessons define, in one place. The number is the lesson where it f
 | include guard | `#ifndef`/`#define`/`#endif` that makes a header count only once | 06 |
 | library | compiled code that programs can use | 06 |
 
+## Data structures and algorithms (optional DSA corners)
+| Term | Means | # |
+|---|---|---|
+| DSA | data structures and algorithms | 05 |
+| Big-O | how the work grows as the data grows: O(1) stays the same, O(n) grows in step with n | 05 |
+| dynamic array | one block of memory with elements side by side, which moves to a bigger block when full (`std::vector`) | 05 |
+| size / capacity | elements in use / elements that fit before the array has to grow | 05 |
+| amortized O(1) | usually O(1), sometimes slower, but O(1) on average | 05 |
+| linear search | checking elements one by one until a match is found, O(n) | 05 |
+
 ## Tools
 | Term | Means | # |
 |---|---|---|

@@ -28,6 +28,8 @@ Build, in C++20, a single-file database that stores rows in an on-disk B+tree an
 ## Lessons
 Each lesson adds **one database idea and at most three new C++ ideas**, and starts by showing the problem the new idea solves. Finished lessons are tagged `lesson-NN-<name>` (e.g. `lesson-01-repl`). Terms are collected in the [glossary](lessons/glossary.md).
 
+When a lesson uses a data structure or algorithm, an optional **DSA corner** (data structures and algorithms) at its end explains it, gives the cost of its operations, and links 1–3 focused resources. You don't need it to finish the lesson.
+
 The 26 lessons ship as **5 releases**. Each release is tagged (`v0.1` … `v1.0`) and is a natural place to stop.
 
 ### v0.1: a tested in-memory database

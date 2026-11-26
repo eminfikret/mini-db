@@ -167,6 +167,45 @@ _Added as they come up._
 git diff lesson-04-rows..lesson-05-table
 ```
 
+## DSA corner (optional)
+**DSA** = *data structures and algorithms*. You don't need this section to finish the lesson. *Why it matters here:* a database is fast or slow depending on how many rows it has to look at.
+
+**Big-O** describes how the work grows as the data grows (**n** = number of rows):
+| Notation | Means | Example |
+|---|---|---|
+| O(1) | the same work, whatever n is | reading `scores[0]` |
+| O(n) | work grows in step with n | a full scan |
+
+**Dynamic array:** what `std::vector` is inside. One block of memory, with elements side by side:
+```
+size 3, capacity 4:  │ 7 │ 9 │ 4 │   │          a free spot is left
+push_back(5):        │ 7 │ 9 │ 4 │ 5 │          free spot → just write it
+push_back(8):        full → get a bigger block, copy everything, free the old block
+                     │ 7 │ 9 │ 4 │ 5 │ 8 │   │   │   │
+```
+| Word | Means |
+|---|---|
+| size | how many elements are in use |
+| capacity | how many fit before the vector has to grow |
+| amortized O(1) | most `push_back`s are O(1). The rare grow is O(n), but capacity multiplies each time (often ×2), so grows get rarer and the **average** stays O(1) |
+
+| Operation on a vector | Cost |
+|---|---|
+| read element `i` | O(1) |
+| `push_back` | amortized O(1) |
+| find a row by id (**linear search**, which is what a full scan does) | O(n) |
+| insert at the front | O(n): every element moves one spot |
+
+**Try it:** push ten numbers into a vector one at a time and print `size()` and `capacity()` after each. When does the capacity jump?
+
+<details><summary>Check: the table has 1,000,000 rows. About how many does <code>select</code> look at to find id 500,000?</summary>
+Up to all 1,000,000, because a full scan is O(n). In lesson 17, keys are kept sorted and found by <b>binary search</b>: about 20 checks, because halving 1,000,000 twenty times gets you to 1 (that's O(log n)).
+</details>
+
+- [Open Data Structures (C++ edition), ch. 2: array-based lists](https://opendatastructures.org/ods-cpp/2_Array_Based_Lists.html): how a growable array works and why `push_back` is amortized O(1)
+- [VisuAlgo: array](https://visualgo.net/en/array): animations of insert and search
+- [Big-O cheat sheet](https://www.bigocheatsheet.com/): the costs of common data structures in one table
+
 ## Go deeper (optional)
 - [cppreference: `std::vector`](https://en.cppreference.com/w/cpp/container/vector)
 - [cppreference: references](https://en.cppreference.com/w/cpp/language/reference)
