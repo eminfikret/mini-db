@@ -14,7 +14,7 @@ This repo is a curriculum. Every stage of the database has its own lesson. A les
 3. Compare with the code at that lesson's git tag: `git checkout lesson-01-repl`.
 
 ## Build and run
-Requirements: a C++20 compiler (Clang or GCC), CMake ≥ 3.20, Ninja (optional).
+Requirements: macOS or Linux (on Windows, use WSL), a C++20 compiler (Clang or GCC), CMake ≥ 3.20, Ninja (optional).
 
 ```sh
 cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug
@@ -23,20 +23,71 @@ cmake --build build
 ```
 
 ## Lessons
-| # | Lesson | You'll learn | Tag | Status |
-|---|--------|--------------|-----|--------|
-| 01 | [REPL and CMake](lessons/01-repl-and-cmake.md) | Compile/link model, CMake basics, reading input, `std::string` | `lesson-01-repl` | Done |
-| 02 | Commands and statements | `enum class`, `std::string_view`, splitting parsing from running a command | `lesson-02-statements` | Planned |
-| 03 | Tests and sanitizers | Multiple files and headers, GoogleTest, ASan/UBSan | `lesson-03-tests` | Planned |
-| 04 | Rows and serialization | Fixed-width integers, byte layout, `memcpy`, `static_assert` | `lesson-04-rows` | Planned |
-| 05 | Pages and an in-memory table | `std::array`, `std::vector`, fixed-size pages | `lesson-05-pages` | Planned |
-| 06 | Persistence: the pager | RAII, destructors, move-only types, file I/O | `lesson-06-pager` | Planned |
-| 07 | Cursors | Iteration over storage, keeping concerns separate | `lesson-07-cursor` | Planned |
-| 08+ | B-tree index | Node layout, search, splits, primary key | — | Planned |
-| — | First release | CI, comparing results with SQLite | `v0.1.0` | Planned |
+Each lesson adds **one database idea and at most three new C++ ideas**, and starts by showing the problem the new idea solves. Finished lessons are tagged `lesson-NN-<name>` (e.g. `lesson-01-repl`). Terms are collected in the [glossary](lessons/glossary.md).
 
-The order of lessons may change as the project grows.
+### Part 1: Talk to the database
+| # | Lesson | Database idea | New C++ | Status |
+|---|---|---|---|---|
+| 01 | [REPL + CMake](lessons/01-repl-and-cmake.md) | the REPL (Read–Eval–Print Loop) is how you talk to a database | `std::string`, `std::getline`, `main`, CMake | ✅ Done |
+| 02 | [Meta-commands](lessons/02-meta-commands.md) | commands for the program vs requests about data | functions, `enum class`, `switch` | Next |
+| 03 | [Statements](lessons/03-statements.md) | parse once, execute later | `struct`, `{}` initialization, `std::optional` | Planned |
+| 04 | Rows | a fixed schema; validating input | fixed-width integers, string streams, `[[nodiscard]]` | Planned |
+| 05 | In-memory table | append-only table; `select` = full scan | `std::vector`, references, range-`for` | Planned |
+
+### Part 2: Engineer the project
+| # | Lesson | Database idea | New C++ | Status |
+|---|---|---|---|---|
+| 06 | Library and modules | layers that only talk to the layer below | headers vs sources, include guards, namespaces | Planned |
+| 07 | Tests | golden transcripts, edge cases | GoogleTest, CTest | Planned |
+
+### Part 3: Bytes, pages, files
+| # | Lesson | Database idea | New C++ | Status |
+|---|---|---|---|---|
+| 08 | Row serialization | on-disk row format | `std::byte`, `std::span`, `std::memcpy`, sanitizers | Planned |
+| 09 | Pages | the page is the unit of disk I/O | `constexpr`, `static_assert`, type aliases | Planned |
+| 10 | Table as a class | storage invariants | `class`, `private`, constructors, `const` member functions | Planned |
+| 11 | Persistence | page N lives at byte N × 4096 | `argc`/`argv`, file descriptors, exceptions | Planned |
+| 12 | Save on every exit | flush before close, on every path | destructors, RAII, `noexcept` | Planned |
+| 13 | One owner per file | a resource has exactly one owner | move-only types, `std::move`, rule of five | Planned |
+| 14 | Pager | page cache, cache miss, dirty page | `std::unique_ptr`, rule of zero | Planned |
+| 15 | Cursor | a position in a table | pointers, `nullptr`, `std::size_t` | Planned |
+| 16 | Tooling and CI | — | clang-format, clang-tidy, CMake presets, GitHub Actions | Planned |
+
+### Part 4: The B+tree
+| # | Lesson | Database idea | New C++ | Status |
+|---|---|---|---|---|
+| 17 | Leaf node | B-tree vs B+tree, node = page | bit shifts and masks, a view class over bytes | Planned |
+| 18 | Sorted keys | binary search, duplicate keys | `std::memmove`, lambdas | Planned |
+| 19 | Leaf split | split, new root, internal node format | `assert`, recursion | Planned |
+| 20 | Search | descend from the root | `std::map`, `<random>` | Planned |
+| 21 | Scan across leaves | next-leaf pointer, range scan | operator overloading, `begin()`/`end()` | Planned |
+| 22 | Parent update | separator keys | — (database-only lesson) | Planned |
+| 23 | Internal split | the tree grows taller | — (database-only lesson) | Planned |
+
+### Part 5: Real SQL
+| # | Lesson | Database idea | New C++ | Status |
+|---|---|---|---|---|
+| 24 | Tokenizer | lexical analysis | `std::string_view`, lifetimes, dangling | Planned |
+| 25 | Parser | grammar, recursive descent, AST (Abstract Syntax Tree) | `std::variant`, `std::visit`, custom exceptions | Planned |
+| 26 | WHERE | predicates, operator precedence | recursive types with `std::unique_ptr` | Planned |
+| 27 | Executor | iterator ("Volcano") model, point lookup | abstract classes, `virtual`, `override` | Planned |
+| 28 | CREATE TABLE *(should)* | the catalog: schema stored in the file | `std::unordered_map` | Planned |
+
+### Part 6: Make it a real database
+| # | Lesson | Database idea | New C++ | Status |
+|---|---|---|---|---|
+| 29 | DELETE *(should)* | lazy delete | — | Planned |
+| 30 | Crash safety *(should)* | atomic commit, rollback journal, `fsync` | `std::filesystem`, fault-injection fakes | Planned |
+| 31 | Buffer pool *(should)* | pin/unpin, LRU (Least Recently Used) eviction | `std::list`, RAII guards | Planned |
+| 32 | Release v0.1.0 | compare results with SQLite | — | Planned |
+
+**Stretch (optional):** B+tree merge on delete · free-page list · variable-length rows · secondary indexes · WAL (Write-Ahead Log) · bytecode VM (virtual machine) · reading a real SQLite file · C++23 refresh · file locking.
+
+The plan may change as the project grows.
 
 ## Credits
-- Stage order inspired by cstack's [Let's Build a Simple Database](https://cstack.github.io/db_tutorial/) (written in C; this repo is a separate C++ implementation).
-- Database theory: [CMU 15-445/645 Database Systems](https://15445.courses.cs.cmu.edu/).
+- Storage-layer order inspired by cstack's [Let's Build a Simple Database](https://cstack.github.io/db_tutorial/) (in C; this repo is a separate C++ implementation).
+- Database theory: [CMU 15-445/645 Database Systems](https://15445.courses.cs.cmu.edu/) and the [SQLite documentation](https://www.sqlite.org/docs.html).
+- B+tree deletion and crash safety: [Build Your Own Database From Scratch](https://build-your-own.org/database/).
+- Parser and expressions: [Crafting Interpreters](https://craftinginterpreters.com/) and [Phil Eaton's database basics](https://notes.eatonphil.com/database-basics.html).
+- C++ practices: [C++ Core Guidelines](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines).

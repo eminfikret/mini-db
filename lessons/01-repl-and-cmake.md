@@ -13,9 +13,9 @@ This is a **REPL** (Read–Eval–Print Loop): read what you type → evaluate i
 A database is a stack of layers. Each lesson builds one:
 ```
 REPL           read what you type          ← you are here
-Parser         text → command              ← 02
-B-tree         find rows fast              ← 08+
-Pager          read/write the file         ← 05–06
+Parser         text → command              ← 03
+B-tree         find rows fast              ← 17+
+Pager          read/write the file         ← 11–14
 file on disk   mini.db
 ```
 
