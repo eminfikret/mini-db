@@ -103,9 +103,29 @@ int n = roll_dice();    // fine
 *Why:* a function that reports success or failure is useless if the caller never looks at the result. Now the compiler catches that.
 
 ### Do
-Prepare now gives back **two things together**: an outcome and, on success, the statement. Outcomes: success, unrecognized keyword, syntax error, string too long, negative id. `main` picks the message by the outcome. Mark prepare `[[nodiscard]]`.
+Prepare gives back **one result** with exactly **two members**:
+```
+result of prepare
+├─ outcome     one of: success · unrecognized keyword · syntax error · string too long · negative id
+└─ statement   a plain statement (type + row), not optional
+```
+| Who | Does |
+|---|---|
+| **prepare** | prints **nothing**. Every failed check **returns right away** with its outcome. Only when every check passes does it return success together with the filled-in statement. Marked `[[nodiscard]]` |
+| **the statement on failure** | stays in its `{}` state. Nobody reads it |
+| **main** | looks at the outcome first: success → execute, then `Executed.`; any other outcome → print its message, and the statement is ignored |
 
-`std::optional` did its job while there was only one way to fail. Now it's replaced.
+| Outcome | `main` prints |
+|---|---|
+| success | (execute's message) `Executed.` |
+| unrecognized keyword | `Unrecognized keyword at start of '<line>'.` |
+| syntax error | `Syntax error. Could not parse statement.` |
+| string too long | `String is too long.` |
+| negative id | `ID must be positive.` |
+
+*Why no optional and no message text in the result:* the outcome already says whether the statement is meaningful, so an optional would say the same thing twice. Keeping the text in `main` means each message lives in one place, and a forgotten outcome makes the build fail.
+
+`std::optional` did its job while there was only one way to fail. Now it's replaced, and its `#include` can go.
 
 <details><summary>Hint 1</summary>"One of a fixed list" was <code>enum class</code> in lesson 02.</details>
 <details><summary>Hint 2</summary>"Two values travelling together" was <code>struct</code> in lesson 03.</details>
