@@ -94,7 +94,7 @@ Each one would be its own small v1.x release, in this order:
 6. `DROP TABLE` + free-page list
 7. Secondary index
 8. Writing a function template
-9. C++23 refresh (`std::expected`)
+9. C++23 upgrade + refactoring lessons: move the project to C++23, replace the outcome enum + result struct with `std::expected` (a statement *or* an error, never both), and refactor the whole codebase against the [clean-code rules](lessons/clean-code.md)
 10. CI with clang-format and clang-tidy
 
 **Not in this project:** a query optimizer · network access · many users at once · logins · joins · `ORDER BY` / `GROUP BY` · buffer pool · overflow pages · WAL (Write-Ahead Log) · a bytecode VM.
