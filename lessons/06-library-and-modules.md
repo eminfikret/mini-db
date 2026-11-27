@@ -149,6 +149,13 @@ Put everything in the library inside `namespace minidb`. `main` refers to it wit
 
 ---
 
+## Clean up
+This whole lesson is a clean-up: the code moves, and the behavior stays the same. Finish by checking every new file against the [clean-code rules](clean-code.md) 1–12. Rules 11 and 12 are new: what goes in a header vs a source, and the namespace.
+
+✅ Same output as lesson 05
+
+---
+
 ## Done when
 - [ ] clean build from an empty `build/`, zero warnings
 - [ ] the transcript from lesson 05 gives exactly the same output

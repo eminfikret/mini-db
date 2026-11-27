@@ -30,6 +30,8 @@ Each lesson adds **one database idea and at most three new C++ ideas**, and star
 
 When a lesson uses a data structure or algorithm, an optional **DSA corner** (data structures and algorithms) at its end explains it, gives the cost of its operations, and links 1–3 focused resources. You don't need it to finish the lesson.
 
+Every lesson ends with a **Clean up** section: with the new tools, the earlier code is tidied up without changing what it does, following the [clean-code rules](lessons/clean-code.md).
+
 The 26 lessons ship as **5 releases**. Each release is tagged (`v0.1` … `v1.0`) and is a natural place to stop.
 
 ### v0.1: a tested in-memory database

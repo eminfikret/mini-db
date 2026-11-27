@@ -180,6 +180,18 @@ Execute for an insert prints `This is where we would insert (<id>, <username>, <
 
 ---
 
+## Clean up
+No new behavior: every line of the transcript gives exactly the same output before and after. Check the code against the [clean-code rules](clean-code.md) 1–9:
+- **Prepare reads as a flat list of checks.** Each failed check returns right away, there's no `else` after a `return`, and nesting stays at 2 levels or less (rule 7).
+- **Every path states its outcome**, including "unrecognized". Success is set on purpose, only on the last line of a successful path (rule 6).
+- **Each limit appears once** as a named constant: 32, 255 and the largest id (rule 8). *Why:* lesson 08 needs the same numbers for the byte layout.
+- **No `default:`** in any `switch` over an enum (rule 2).
+- **Includes:** `<optional>` is no longer used (rule 9).
+
+✅ Same output as before the clean-up · zero warnings
+
+---
+
 ## Done when
 - [ ] clean build, zero warnings
 - [ ] every line of the transcript at the top gives exactly that output
@@ -187,6 +199,7 @@ Execute for an insert prints `This is where we would insert (<id>, <username>, <
 - [ ] `insert 0 a b` → `ID must be positive.` · `insert 4294967296 a b` → syntax error
 - [ ] `insert 1 a b c` (extra word) → syntax error · `select x` → still rejected
 - [ ] ignoring prepare's result fails the build
+- [ ] the clean-up is done: rules 1–9 hold
 
 Testing long strings without counting by hand (`printf 'a%.0s' {1..33}` prints 33 `a`s):
 ```sh

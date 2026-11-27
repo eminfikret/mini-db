@@ -97,10 +97,8 @@ add_by_reference:  address 1000 │ 7, 10 │ ← mine and scores (same spot, tw
 ### Do
 - Execute gets the table so that an insert can **change** it and a select can only **read** it.
 - An insert adds its row at the end and prints only `Executed.` (no placeholder anymore).
-- Clean-up: every function that takes a `std::string` it only **reads** should stop copying it.
 
 <details><summary>Hint 1</summary>Which of the three parameter kinds lets a function change the caller's table?</details>
-<details><summary>Hint 2</summary>A <code>std::string</code> that's only read: which kind avoids the copy and also forbids changes?</details>
 
 ✅ The "Try this first" bug is gone: the row is still there after the insert
 
@@ -126,6 +124,15 @@ Select prints every row, oldest first, one per line, as `(<id>, <username>, <ema
 
 ---
 
+## Clean up
+No new behavior. Check the code against the [clean-code rules](clean-code.md) 1–10. New is rule 10: every function that only **reads** a `std::string`, a statement or the table takes it as `const&`, with no copy.
+
+<details><summary>Hint</summary>Go through every function's parameters. For each one, ask whether the function changes it and whether it's bigger than a number.</details>
+
+✅ Same output as before the clean-up · the 1000-insert test still prints `1000`
+
+---
+
 ## Done when
 - [ ] clean build, zero warnings
 - [ ] the transcript at the top gives exactly that output
@@ -135,7 +142,7 @@ Select prints every row, oldest first, one per line, as `(<id>, <username>, <ema
   { for i in $(seq 1 1000); do echo "insert $i user$i user$i@x.com"; done; echo select; } | ./build/mini-db | grep -c '@x.com)'
   ```
   prints `1000` (`seq 1 1000` counts from 1 to 1000; `grep -c` counts matching lines)
-- [ ] no function copies a `std::string` that it only reads
+- [ ] the clean-up is done: rules 1–10 hold, so no function copies a value it only reads
 
 ## Check yourself
 Answer before opening.
