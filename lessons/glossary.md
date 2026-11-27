@@ -50,6 +50,12 @@ Every term the lessons define, in one place. The number is the lesson where it f
 | string stream | `std::istringstream`: reads from text like `std::cin` reads from the keyboard | 04 |
 | attribute | a note to the compiler in `[[ ]]` | 04 |
 | `[[nodiscard]]` | "don't ignore this function's result" | 04 |
+| `constexpr` | a constant fixed while compiling, which can never change | 04 |
+| `std::size_t` | the standard library's type for sizes and counts, never negative | 04 |
+| `std::numeric_limits` | gives a number type's limits, e.g. its largest value | 04 |
+| macro | an old C text replacement done before compiling, with no type (`UINT32_MAX`) | 04 |
+| `static_cast` | an explicit, visible conversion from one type to another | 04 |
+| early return | leaving a function as soon as a check fails | 04 |
 | `std::vector` | a list that grows | 05 |
 | address | the number of a spot in memory | 05 |
 | reference | `T&`: another name for an existing variable | 05 |
@@ -60,6 +66,7 @@ Every term the lessons define, in one place. The number is the lesson where it f
 | header / source | `.hpp` with declarations and types / `.cpp` with definitions | 06 |
 | include guard | `#ifndef`/`#define`/`#endif` that makes a header count only once | 06 |
 | library | compiled code that programs can use | 06 |
+| unnamed namespace | `namespace { … }`: its contents are visible only in that one source file | 06 |
 
 ## Data structures and algorithms (optional DSA corners)
 | Term | Means | # |

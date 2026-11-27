@@ -17,7 +17,7 @@ This is where we would do a select.
 Executed.
 db > .exit
 ```
-**New in this lesson:** fixed-width integers · string streams · `[[nodiscard]]`
+**New in this lesson:** fixed-width integers · string streams · `[[nodiscard]]` · *clean-up tools:* `constexpr`, `std::numeric_limits`, `static_cast`
 
 | Word | Means |
 |---|---|
@@ -181,14 +181,90 @@ Execute for an insert prints `This is where we would insert (<id>, <username>, <
 ---
 
 ## Clean up
-No new behavior: every line of the transcript gives exactly the same output before and after. Check the code against the [clean-code rules](clean-code.md) 1–9:
-- **Prepare reads as a flat list of checks.** Each failed check returns right away, there's no `else` after a `return`, and nesting stays at 2 levels or less (rule 7).
-- **Every path states its outcome**, including "unrecognized". Success is set on purpose, only on the last line of a successful path (rule 6).
-- **Each limit appears once** as a named constant: 32, 255 and the largest id (rule 8). *Why:* lesson 08 needs the same numbers for the byte layout.
-- **No `default:`** in any `switch` over an enum (rule 2).
-- **Includes:** `<optional>` is no longer used (rule 9).
+No new behavior: every line of the transcript gives exactly the same output before and after.
 
-✅ Same output as before the clean-up · zero warnings
+### Know
+**Early return.** Handle each failure first and leave the function right away. What's left at the bottom is the success path:
+```cpp
+// nested: the real answer is buried 3 levels deep
+std::string grade(int score) {
+    if (score >= 0) {
+        if (score <= 100) {
+            if (score >= 50) { return "pass"; } else { return "fail"; }
+        } else { return "invalid"; }
+    } else { return "invalid"; }
+}
+
+// early return: each check leaves, the rest reads top to bottom
+std::string grade(int score) {
+    if (score < 0 || score > 100) {
+        return "invalid";
+    }
+    if (score < 50) {
+        return "fail";
+    }
+    return "pass";
+}
+```
+
+**Named constants.**
+```cpp
+constexpr int days_per_week = 7;
+```
+| Word | Means |
+|---|---|
+| `constexpr` | the value is fixed while compiling and can never change. *Why not plain `const`:* `const` only forbids changes, while `constexpr` also guarantees the value is known before the program runs, so it can be used wherever a fixed number is needed (lesson 09) |
+| `std::size_t` | the type the standard library uses for sizes and counts. `.size()` gives back a `std::size_t`. Never negative |
+
+**The limits of a type** (`#include <limits>`):
+```cpp
+std::numeric_limits<std::uint8_t>::max()   // 255
+```
+*Why not `UINT32_MAX`:* that's an old C **macro**, a text replacement done before compiling, with no type. `std::numeric_limits` works the same way for every number type.
+
+**Visible conversions:**
+```cpp
+double price = 9.99;
+int euros = static_cast<int>(price);   // 9: dropping the fraction is intended
+```
+*Why:* a silent conversion can lose data without anyone noticing. `static_cast` tells the reader it's on purpose. Check the range **before** converting.
+
+### Do
+**1. Three constants,** right above `Row`, because they belong to the schema. After this, `32`, `255` and `UINT32_MAX` appear nowhere else.
+
+| Name | Type | Value |
+|---|---|---|
+| `max_username_length` | `std::size_t` | 32 |
+| `max_email_length` | `std::size_t` | 255 |
+| `max_id` | `std::int64_t` | the largest `std::uint32_t`, from `std::numeric_limits` |
+
+*Why `max_id` is `std::int64_t`:* it's compared with the id you read, which is a `std::int64_t`.
+
+**2. Prepare as a flat list of checks,** in exactly this order. Each failed check returns right away:
+
+| # | Check | If it fails, return |
+|---|---|---|
+| 1 | a first word can be read | unrecognized keyword |
+| 2 | if the first word is `select`: nothing follows it | unrecognized keyword. If nothing follows → **success**, with a select statement |
+| 3 | the first word is `insert` | unrecognized keyword |
+| 4 | id, username and email can all be read | syntax error |
+| 5 | no extra word follows | syntax error |
+| 6 | id ≥ 1 | negative id |
+| 7 | id ≤ `max_id` | syntax error |
+| 8 | username ≤ `max_username_length` and email ≤ `max_email_length` characters | string too long |
+| 9 | (all passed) store the id in the row with `static_cast<std::uint32_t>` | → **success**, with the insert statement |
+
+*Why syntax checks (4–5) before value checks (6–8):* a badly formed line should get "syntax error", not a complaint about one of its values. So `insert -1 a b c` is a syntax error.
+
+**3. The rules for every return:** the outcome is set right before the `return` that uses it (rule 6). No `else` after a `return`, and at most 2 levels of nesting (rule 7). Use `.size()` for string lengths.
+
+<details><summary>Hint</summary>Write each check as "if this is wrong → set the outcome and return". The code after the last check is the success path, with no <code>if</code> around it.</details>
+
+✅ Same output as before the clean-up · zero warnings · `insert -1 a b c` → syntax error · this shows only the two constant lines:
+```sh
+grep -nE '\b(32|255)\b|UINT32_MAX' src/main.cpp
+```
+(`grep -n` prints matching lines with their line numbers, `-E` allows `|` for "or", and `\b` means "a whole number, not part of a longer one")
 
 ---
 
@@ -199,7 +275,7 @@ No new behavior: every line of the transcript gives exactly the same output befo
 - [ ] `insert 0 a b` → `ID must be positive.` · `insert 4294967296 a b` → syntax error
 - [ ] `insert 1 a b c` (extra word) → syntax error · `select x` → still rejected
 - [ ] ignoring prepare's result fails the build
-- [ ] the clean-up is done: rules 1–9 hold
+- [ ] the clean-up is done: [clean-code rules](clean-code.md) 1–10 hold, and prepare follows the 9-check order
 
 Testing long strings without counting by hand (`printf 'a%.0s' {1..33}` prints 33 `a`s):
 ```sh

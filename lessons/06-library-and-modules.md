@@ -9,7 +9,7 @@ mini-db/
   src/                sources: HOW it works          ┘→ library  minidb_core
   apps/main.cpp       only the REPL loop               → program  mini-db (uses the library)
 ```
-**New in this lesson:** header + source files · include guards · namespaces
+**New in this lesson:** header + source files · include guards · namespaces (named and unnamed)
 
 | Word | Means |
 |---|---|
@@ -64,7 +64,15 @@ int main() { return area(3, 4) == 12 ? 0 : 1; }
 - **Every header includes what it uses.** *Why:* it must compile no matter which file includes it first.
 
 ### Do
-Split `main.cpp` into modules: meta-command, statement, row and table, each as a header plus a source (or only a header if it has no function bodies). `apps/main.cpp` keeps only the REPL loop.
+Split `src/main.cpp` into exactly these files. `src/main.cpp` itself is deleted, and its loop moves to `apps/main.cpp`.
+
+| Module | Header in `include/minidb/` | Source in `src/` | Contains |
+|---|---|---|---|
+| row | `row.hpp` | none (no function bodies) | the three limit constants, `Row` |
+| meta-command | `meta_command.hpp` | `meta_command.cpp` | `MetaCommandResult`, `do_meta_command` |
+| statement | `statement.hpp` | `statement.cpp` | `StatementType`, `Statement`, `PrepareOutcome`, `PrepareResult`, `prepare_statement`. `prepare_insert` is only used inside `statement.cpp`, so it isn't in the header (Step 3) |
+| table | `table.hpp` | `table.cpp` | `Table`, `execute_statement`. `execute_insert` and `execute_select` are only used inside `table.cpp`, so they aren't in the header (Step 3) |
+| the program | none | `apps/main.cpp` | the prompt, the loop, and the messages for each outcome. It includes `meta_command.hpp`, `statement.hpp` and `table.hpp` |
 
 Headers go in `include/minidb/`, and you include them as `"minidb/table.hpp"`. *Why the extra folder:* the include line then shows which project a header comes from, and your `table.hpp` can't clash with another library's `table.hpp`.
 
@@ -113,8 +121,17 @@ geometry::area(3, 4);    // used from outside the namespace
 ```
 *Why:* `Table`, `Row` and `execute` are common names. Inside `namespace minidb` they can't clash with anyone else's.
 
+An **unnamed namespace** (`namespace { … }`, with no name) makes its contents visible **only inside that one source file**:
+```cpp
+// geometry.cpp
+namespace {
+    int square(int n) { return n * n; }   // helper: no other file can call it
+}
+```
+*Why:* a helper that only one file uses shouldn't be part of the module's public face, and it can't clash with a helper of the same name in another file.
+
 ### Do
-Put everything in the library inside `namespace minidb`. `main` refers to it with `minidb::`. No `using namespace` anywhere.
+Put everything in the library inside `namespace minidb`. `main` refers to it with `minidb::`. No `using namespace` anywhere. The helpers `prepare_insert`, `execute_insert` and `execute_select` go in an unnamed namespace inside their source file, which itself sits inside `namespace minidb`.
 
 <details><summary>Hint</summary>Both the header and the source of a module wrap their contents in the same namespace.</details>
 
@@ -142,7 +159,13 @@ Put everything in the library inside `namespace minidb`. `main` refers to it wit
 - Bigger projects have a `CMakeLists.txt` in each folder. With a handful of files, one is enough for now.
 
 ### Do
-`CMakeLists.txt` builds the library `minidb_core` from `src/`, and the program `mini-db` from `apps/main.cpp`, linked to the library.
+`CMakeLists.txt` keeps lesson 01's first three lines (minimum version, project, C++ standard). Then, in this order:
+1. the library `minidb_core`, built from `src/meta_command.cpp`, `src/statement.cpp` and `src/table.cpp`, listed by name
+2. its include folder: `include`, as `PUBLIC`
+3. its warning flags (the same four as lesson 01)
+4. the program `mini-db`, built from `apps/main.cpp`
+5. the program's warning flags (the same four again)
+6. the program uses the library, as `PRIVATE`
 
 <details><summary>Hint 1</summary>The program needs the library's headers. Which keyword passes the include folder on to everyone using the library?</details>
 <details><summary>Hint 2</summary>The order from lesson 01 still holds: a target must exist before you set its options.</details>
@@ -150,7 +173,7 @@ Put everything in the library inside `namespace minidb`. `main` refers to it wit
 ---
 
 ## Clean up
-This whole lesson is a clean-up: the code moves, and the behavior stays the same. Finish by checking every new file against the [clean-code rules](clean-code.md) 1–12. Rules 11 and 12 are new: what goes in a header vs a source, and the namespace.
+This whole lesson is a clean-up: the code moves, and the behavior stays the same. Finish by checking every new file against the [clean-code rules](clean-code.md) 1–14. Rules 13 and 14 are new: what goes in a header vs a source, the namespace, and the unnamed namespace for helpers.
 
 ✅ Same output as lesson 05
 

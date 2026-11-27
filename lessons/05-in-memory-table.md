@@ -60,9 +60,7 @@ scores[0];                    // 7 (counting starts at 0)
 *Why a vector:* you don't know in advance how many rows will be inserted.
 
 ### Do
-Create a table type that holds rows. `main` creates **one** table before the loop, so it lasts the whole session.
-
-<details><summary>Hint</summary>The table is a <code>struct</code> whose one member is a list of rows.</details>
+A `struct` named `Table` with exactly **one member**, `rows`: a `std::vector` of `Row`. `main` creates **one** `Table` before the loop, so it lasts the whole session.
 
 ✅ Builds; behavior unchanged
 
@@ -95,10 +93,17 @@ add_by_reference:  address 1000 │ 7, 10 │ ← mine and scores (same spot, tw
 | `const T& x` | the caller's spot, **read-only** | big values the function only **reads**. *Why:* no copy is made |
 
 ### Do
-- Execute gets the table so that an insert can **change** it and a select can only **read** it.
-- An insert adds its row at the end and prints only `Executed.` (no placeholder anymore).
+Execute is split into three functions, one job each:
 
-<details><summary>Hint 1</summary>Which of the three parameter kinds lets a function change the caller's table?</details>
+| Function | Gets | Does |
+|---|---|---|
+| `execute_statement` | the statement (`const&`) and the table (`&`, because an insert changes it) | a `switch` on the statement type, which calls one of the two below |
+| `execute_insert` | the row (`const&`) and the table (`&`) | adds the row at the end of `rows`. Prints nothing |
+| `execute_select` | the table (`const&`, because it only reads) | prints every row (Step 3) |
+
+`main` still prints `Executed.` after a successful execute, and nothing else changes in `main`.
+
+<details><summary>Hint</summary>For each parameter, ask two questions: does the function change it, and is it bigger than a number? The table in Know gives the kind.</details>
 
 ✅ The "Try this first" bug is gone: the row is still there after the insert
 
@@ -118,16 +123,19 @@ for (const std::string& name : names) {
 `const std::string&`: each element is **read** in place, with no copy and no changes.
 
 ### Do
-Select prints every row, oldest first, one per line, as `(<id>, <username>, <email>)`, then `Executed.`
+`execute_select` prints every row, oldest first, one per line, as `(<id>, <username>, <email>)`. `main` then prints `Executed.` as usual.
 
 <details><summary>Hint</summary>The loop variable is one row. Which parameter kind from Step 2 fits "only reads"?</details>
 
 ---
 
 ## Clean up
-No new behavior. Check the code against the [clean-code rules](clean-code.md) 1–10. New is rule 10: every function that only **reads** a `std::string`, a statement or the table takes it as `const&`, with no copy.
+No new behavior. Check the code against the [clean-code rules](clean-code.md) 1–12. Two rules are new:
 
-<details><summary>Hint</summary>Go through every function's parameters. For each one, ask whether the function changes it and whether it's bigger than a number.</details>
+| Rule | Do exactly this |
+|---|---|
+| 11: read-only values as `const&` | these parameters become `const&`: the line in `do_meta_command`, the line in `prepare_statement`. (`execute_statement`, `execute_insert` and `execute_select` already got the right kinds in Step 2.) |
+| 12: one job per function | `prepare_statement` keeps checks 1–3 from lesson 04 (read the first word, handle `select`, reject anything else). For `insert`, it calls a new function `prepare_insert`, which gets the string stream by `&` and returns the result. Checks 4–9 move into `prepare_insert` unchanged. *Why `&` and not `const&`:* reading from a stream moves its reading position, so it changes the stream |
 
 ✅ Same output as before the clean-up · the 1000-insert test still prints `1000`
 
@@ -142,7 +150,7 @@ No new behavior. Check the code against the [clean-code rules](clean-code.md) 1�
   { for i in $(seq 1 1000); do echo "insert $i user$i user$i@x.com"; done; echo select; } | ./build/mini-db | grep -c '@x.com)'
   ```
   prints `1000` (`seq 1 1000` counts from 1 to 1000; `grep -c` counts matching lines)
-- [ ] the clean-up is done: rules 1–10 hold, so no function copies a value it only reads
+- [ ] the clean-up is done: rules 1–12 hold (no function copies a value it only reads; insert parsing lives in `prepare_insert`)
 
 ## Check yourself
 Answer before opening.

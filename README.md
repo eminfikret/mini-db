@@ -40,22 +40,22 @@ The 26 lessons ship as **5 releases**. Each release is tagged (`v0.1` … `v1.0`
 | 01 | [REPL + CMake](lessons/01-repl-and-cmake.md) | the REPL (Read–Eval–Print Loop) is how you talk to a database | `std::string`, `std::getline`, `main`, CMake | ✅ Done |
 | 02 | [Meta-commands](lessons/02-meta-commands.md) | commands for the program vs requests about data | functions, `enum class`, `switch` | ✅ Done |
 | 03 | [Statements](lessons/03-statements.md) | parse once, execute later | `struct`, `{}` initialization, `std::optional` | ✅ Done |
-| 04 | [Rows](lessons/04-rows.md) | a fixed schema; validating input | fixed-width integers, string streams, `[[nodiscard]]` | Next |
+| 04 | [Rows](lessons/04-rows.md) | a fixed schema; validating input | fixed-width integers, string streams, `[[nodiscard]]` · clean-up: `constexpr`, `std::numeric_limits`, `static_cast` | Next |
 | 05 | [In-memory table](lessons/05-in-memory-table.md) | append-only table; `select` = full scan | `std::vector`, references, range-`for` | Planned |
-| 06 | [Library and modules](lessons/06-library-and-modules.md) | layers that only talk to the layer below | headers vs sources, include guards, namespaces | Planned |
-| 07 | Tests | golden transcripts, edge cases | GoogleTest, CTest | Planned |
+| 06 | [Library and modules](lessons/06-library-and-modules.md) | layers that only talk to the layer below | headers vs sources, include guards, namespaces (named and unnamed) | Planned |
+| 07 | Tests | golden transcripts, edge cases | GoogleTest, CTest, sanitizers | Planned |
 
 ### v0.2: data survives a restart
 | # | Lesson | Database idea | New C++ | Status |
 |---|---|---|---|---|
-| 08 | Row serialization | on-disk row format | `std::byte`, `std::span`, `std::memcpy`, sanitizers | Planned |
-| 09 | Pages | the page is the unit of disk I/O | `constexpr`, `static_assert`, type aliases | Planned |
+| 08 | Row serialization | on-disk row format | `std::byte`, `std::span`, `std::memcpy` | Planned |
+| 09 | Pages | the page is the unit of disk I/O | `static_assert`, type aliases, `constexpr` sizes | Planned |
 | 10 | Table as a class | storage invariants | `class`, `private`, constructors, `const` member functions | Planned |
 | 11 | Persistence | page N lives at byte N × 4096 | `argc`/`argv`, file descriptors, exceptions | Planned |
 | 12 | Save on every exit | flush before close, on every path | destructors, RAII, `noexcept` | Planned |
 | 13 | One owner per file | a resource has exactly one owner | move-only types, `std::move`, rule of five | Planned |
 | 14 | Pager | page cache, cache miss, dirty page | `std::unique_ptr`, rule of zero | Planned |
-| 15 | Cursor | a position in a table | pointers, `nullptr`, `std::size_t` | Planned |
+| 15 | Cursor | a position in a table | pointers, `nullptr` | Planned |
 
 ### v0.3: a B+tree with two levels
 | # | Lesson | Database idea | New C++ | Status |
